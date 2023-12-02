@@ -24,15 +24,50 @@ async function run() {
     try {
         await client.connect();
 
-        //////////////////
+        // Collections
+        const usersCollection = client.db("contestHubDB").collection("users");
+        const contestsCollection = client
+            .db("contestHubDB")
+            .collection("contests");
+
+        // Contests Related Api
+        app.get("/top-contests", async (req, res) => {
+            const topContest = contestsCollection
+                .find()
+                .sort({ participantsCount: -1 });
+            const result = (await topContest.toArray()).slice(0, 5);
+            res.send(result);
+        });
+
+        app.get("/top-winner", async (req, res) => {
+            const topContest = contestsCollection
+                .find()
+                .sort({ participantsCount: -1 });
+            const result = (await topContest.toArray()).slice(0, 3);
+            res.send(result);
+        });
+
+        // Users Related API
+        app.post("/users", async (req, res) => {
+            const newUser = req.body;
+            const query = { email: newUser.email };
+            const existingUser = await usersCollection.findOne(query);
+            if (existingUser) {
+                return res.send({
+                    message: "User Already Exist",
+                    insertedId: null,
+                });
+            }
+            const result = await usersCollection.insertOne(newUser);
+            res.send(result);
+        });
 
         await client.db("admin").command({ ping: 1 });
         console.log(
             "Pinged your deployment. You successfully connected to MongoDB!"
         );
     } finally {
-        // Ensures that the client will close when you finish/error
-        await client.close();
+        // await client.close();
     }
 }
 run().catch(console.dir);
