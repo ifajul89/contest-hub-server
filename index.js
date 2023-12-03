@@ -9,7 +9,7 @@ require("dotenv").config();
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6cq5lj6.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
@@ -31,6 +31,18 @@ async function run() {
             .collection("contests");
 
         // Contests Related Api
+        app.get("/contests", async (req, res) => {
+            const result = await contestsCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.get("/contests/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await contestsCollection.findOne(query);
+            res.send(result);
+        });
+
         app.get("/top-contests", async (req, res) => {
             const topContest = contestsCollection
                 .find()
