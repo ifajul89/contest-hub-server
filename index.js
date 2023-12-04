@@ -1,9 +1,10 @@
 // Imports
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
-require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Middlewares
 app.use(cors());
@@ -72,6 +73,27 @@ async function run() {
             }
             const result = await usersCollection.insertOne(newUser);
             res.send(result);
+        });
+
+        app.get("/users", async (req, res) => {
+            const result = await usersCollection.find().toArray();
+            res.send(result);
+        });
+
+        // Payments Intent
+        app.post("/create-payment-intent", async (req, res) => {
+            const { fee } = req.body;
+            const amount = parseInt(fee * 100);
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ["card"],
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
         });
 
         await client.db("admin").command({ ping: 1 });
