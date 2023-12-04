@@ -37,6 +37,13 @@ async function run() {
             res.send(result);
         });
 
+        app.delete("/contests/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await contestsCollection.deleteOne(query);
+            res.send(result);
+        });
+
         app.get("/contests/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
@@ -63,7 +70,7 @@ async function run() {
         // Users Related API
         app.post("/users", async (req, res) => {
             const newUser = req.body;
-            const query = { email: newUser.email };
+            const query = { userEmail: newUser.userEmail };
             const existingUser = await usersCollection.findOne(query);
             if (existingUser) {
                 return res.send({
@@ -72,6 +79,13 @@ async function run() {
                 });
             }
             const result = await usersCollection.insertOne(newUser);
+            res.send(result);
+        });
+
+        app.delete("/users/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await usersCollection.deleteOne(query);
             res.send(result);
         });
 
