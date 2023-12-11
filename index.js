@@ -37,6 +37,13 @@ async function run() {
             res.send(result);
         });
 
+        app.get("/searched-contests", async (req, res) => {
+            const search = req.query.search;
+            const query = { contestName: { $regex: new RegExp(search, "i") } };
+            const result = await contestsCollection.find(query).toArray();
+            res.send(result);
+        });
+
         app.delete("/contests/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
