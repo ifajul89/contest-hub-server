@@ -39,7 +39,9 @@ async function run() {
 
         app.get("/searched-contests", async (req, res) => {
             const search = req.query.search;
-            const query = { contestName: { $regex: new RegExp(search, "i") } };
+            const query = {
+                contestCategory: { $regex: new RegExp(search, "i") },
+            };
             const result = await contestsCollection.find(query).toArray();
             res.send(result);
         });
