@@ -33,17 +33,16 @@ async function run() {
 
         // Contests Related Api
         app.get("/contests", async (req, res) => {
-            const result = await contestsCollection.find().toArray();
-            res.send(result);
-        });
-
-        app.get("/searched-contests", async (req, res) => {
             const search = req.query.search;
+            if (search === "All") {
+                const result = await contestsCollection.find().toArray();
+                return res.send(result);
+            }
             const query = {
                 contestCategory: { $regex: new RegExp(search, "i") },
             };
             const result = await contestsCollection.find(query).toArray();
-            res.send(result);
+            return res.send(result);
         });
 
         app.delete("/contests/:id", async (req, res) => {
