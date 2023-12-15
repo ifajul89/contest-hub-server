@@ -45,6 +45,12 @@ async function run() {
             return res.send(result);
         });
 
+        app.post("/contests", async (req, res) => {
+            const newContest = req.body;
+            const result = await contestsCollection.insertOne(newContest);
+            res.send(result);
+        });
+
         app.delete("/contests/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
