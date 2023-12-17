@@ -30,6 +30,9 @@ async function run() {
         const contestsCollection = client
             .db("contestHubDB")
             .collection("contests");
+        const registeredContestsCollection = client
+            .db("contestHubDB")
+            .collection("registeredContests");
 
         // Contests Related Api
         app.get("/contests", async (req, res) => {
@@ -135,6 +138,14 @@ async function run() {
             res.send({
                 clientSecret: paymentIntent.client_secret,
             });
+        });
+
+        app.post("/registered-contests", async (req, res) => {
+            const newRegistration = req.body;
+            const result = await registeredContestsCollection.insertOne(
+                newRegistration
+            );
+            res.send(result);
         });
 
         // await client.db("admin").command({ ping: 1 });
