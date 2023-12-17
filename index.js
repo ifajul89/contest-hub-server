@@ -84,6 +84,14 @@ async function run() {
             res.send(result);
         });
 
+        app.get("/my-created-contests", async (req, res) => {
+            const creator = req.query.creator;
+            console.log(creator);
+            const query = { creatorEmail: creator };
+            const result = await contestsCollection.find(query).toArray();
+            res.send(result);
+        });
+
         // Users Related API
         app.post("/users", async (req, res) => {
             const newUser = req.body;
@@ -140,6 +148,7 @@ async function run() {
             });
         });
 
+        // Getting Payment
         app.post("/registered-contests", async (req, res) => {
             const newRegistration = req.body;
             const result = await registeredContestsCollection.insertOne(
