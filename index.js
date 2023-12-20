@@ -61,13 +61,6 @@ async function run() {
             res.send(result);
         });
 
-        app.get("/contests/:id", async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const result = await contestsCollection.findOne(query);
-            res.send(result);
-        });
-
         app.get("/top-contests", async (req, res) => {
             const topContest = contestsCollection
                 .find()
@@ -88,6 +81,32 @@ async function run() {
             const creator = req.query.creator;
             const query = { creatorEmail: creator };
             const result = await contestsCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.patch("/my-created-contests/:id", async (req, res) => {
+            const newContest = req.body;
+            console.log(newContest);
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedNewContest = {
+                $set: {
+                    winnerName: newContest.winnerName,
+                    winnerEmail: newContest.winnerEmail,
+                    winnerImage: newContest.winnerImage,
+                },
+            };
+            const result = await contestsCollection.updateOne(
+                filter,
+                updatedNewContest
+            );
+            res.send(result);
+        });
+
+        app.get("/contests/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await contestsCollection.findOne(query);
             res.send(result);
         });
 
