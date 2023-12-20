@@ -86,9 +86,17 @@ async function run() {
 
         app.get("/my-created-contests", async (req, res) => {
             const creator = req.query.creator;
-            console.log(creator);
             const query = { creatorEmail: creator };
             const result = await contestsCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.get("/my-created-contests/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { contestId: id };
+            const result = await registeredContestsCollection
+                .find(query)
+                .toArray();
             res.send(result);
         });
 
