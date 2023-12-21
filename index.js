@@ -86,7 +86,6 @@ async function run() {
 
         app.patch("/my-created-contests/:id", async (req, res) => {
             const newContest = req.body;
-            console.log(newContest);
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updatedNewContest = {
@@ -103,10 +102,27 @@ async function run() {
             res.send(result);
         });
 
+        app.patch("/contests/:id", async (req, res) => {
+            const newContest = req.body;
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedNewContest = {
+                $set: {
+                    participantsCount: newContest.participantsCount,
+                },
+            };
+            const result = await contestsCollection.updateOne(
+                filter,
+                updatedNewContest
+            );
+            res.send(result);
+        });
+
         app.get("/contests/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await contestsCollection.findOne(query);
+            console.log(result);
             res.send(result);
         });
 
