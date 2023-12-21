@@ -118,6 +118,22 @@ async function run() {
             res.send(result);
         });
 
+        app.patch("/admin-contests/:id", async (req, res) => {
+            const newContest = req.body;
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedNewContest = {
+                $set: {
+                    contestStatus: newContest.contestStatus,
+                },
+            };
+            const result = await contestsCollection.updateOne(
+                filter,
+                updatedNewContest
+            );
+            res.send(result);
+        });
+
         app.get("/contests/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
