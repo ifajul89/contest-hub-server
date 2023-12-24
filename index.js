@@ -186,6 +186,22 @@ async function run() {
             res.send(result);
         });
 
+        app.patch("/users/:id", async (req, res) => {
+            const updatedUser = req.body;
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedNewUser = {
+                $set: {
+                    role: updatedUser.role,
+                },
+            };
+            const result = await usersCollection.updateOne(
+                filter,
+                updatedNewUser
+            );
+            res.send(result);
+        });
+
         app.get("/users", async (req, res) => {
             const result = await usersCollection.find().toArray();
             res.send(result);
@@ -213,6 +229,34 @@ async function run() {
             const result = await registeredContestsCollection.insertOne(
                 newRegistration
             );
+            res.send(result);
+        });
+
+        app.get("/registered-contests/:email", async (req, res) => {
+            const email = req.params.email;
+            const data = req.query.data;
+            console.log(data);
+            const query = { registerEmail: email };
+            if (data === "sorted") {
+                const options = {
+                    sort: { contestDeadline: 1 },
+                };
+                const result = await registeredContestsCollection
+                    .find(query, options)
+                    .toArray();
+                return res.send(result);
+            } else {
+                const result = await registeredContestsCollection
+                    .find(query)
+                    .toArray();
+                return res.send(result);
+            }
+        });
+
+        app.get("/my-winning-contests/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { winnerEmail: email };
+            const result = await contestsCollection.find(filter).toArray();
             res.send(result);
         });
 
