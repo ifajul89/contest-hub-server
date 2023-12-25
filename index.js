@@ -235,22 +235,16 @@ async function run() {
         app.get("/registered-contests/:email", async (req, res) => {
             const email = req.params.email;
             const data = req.query.data;
-            console.log(data);
+
             const query = { registerEmail: email };
-            if (data === "sorted") {
-                const options = {
-                    sort: { contestDeadline: 1 },
-                };
-                const result = await registeredContestsCollection
-                    .find(query, options)
-                    .toArray();
-                return res.send(result);
-            } else {
-                const result = await registeredContestsCollection
-                    .find(query)
-                    .toArray();
-                return res.send(result);
-            }
+            const options =
+                data === "sorted" ? { sort: { contestDeadline: 1 } } : {};
+
+            const registeredContests = await registeredContestsCollection
+                .find(query, options)
+                .toArray();
+
+            res.send(registeredContests);
         });
 
         app.get("/my-winning-contests/:email", async (req, res) => {
