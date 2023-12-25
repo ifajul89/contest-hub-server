@@ -232,19 +232,35 @@ async function run() {
             res.send(result);
         });
 
+        const currentDate = new Date();
+
         app.get("/registered-contests/:email", async (req, res) => {
             const email = req.params.email;
             const data = req.query.data;
 
-            const query = { registerEmail: email };
-            const options =
-                data === "sorted" ? { sort: { contestDeadline: 1 } } : {};
+            if (data === "sorted") {
+                const sortedQuery = {
+                    registerEmail: email,
+                    contestDeadline: { $gte: currentDate.toISOString() },
+                };
+                const options = {
+                    sort: { contestDeadline: 1 },
+                };
+                const registeredContests = await registeredContestsCollection
+                    .find(sortedQuery, options)
+                    .toArray();
 
-            const registeredContests = await registeredContestsCollection
-                .find(query, options)
-                .toArray();
+                res.send(registeredContests);
+            } else {
+                const query = {
+                    registerEmail: email,
+                };
+                const registeredContests = await registeredContestsCollection
+                    .find(query)
+                    .toArray();
 
-            res.send(registeredContests);
+                res.send(registeredContests);
+            }
         });
 
         app.get("/my-winning-contests/:email", async (req, res) => {
