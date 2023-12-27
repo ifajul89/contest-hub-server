@@ -141,7 +141,7 @@ async function run() {
             res.send(result);
         });
 
-        app.get("/my-created-contests/:id", async (req, res) => {
+        app.get("/submission/:id", async (req, res) => {
             const id = req.params.id
             const query = { contestId: id };
             const result = await registeredContestsCollection
