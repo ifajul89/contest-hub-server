@@ -138,12 +138,11 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await contestsCollection.findOne(query);
-            console.log(result);
             res.send(result);
         });
 
         app.get("/my-created-contests/:id", async (req, res) => {
-            const id = req.params.id;
+            const id = req.params.id
             const query = { contestId: id };
             const result = await registeredContestsCollection
                 .find(query)
