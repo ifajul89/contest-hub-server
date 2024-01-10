@@ -46,11 +46,19 @@ async function run() {
             const token = jwt.sign(user, process.env.ACCESS_TOKEN, {
                 expiresIn: "6h",
             });
-            res.cookie("access Token", token, {
+            res.cookie("access token", token, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
             }).send({ success: true });
+        });
+
+        app.post("/logout", async (req, res) => {
+            const user = req.body;
+            console.log("Logging Out User", user);
+            res.clearCookie("access token", { maxAge: 0 }).send({
+                success: true,
+            });
         });
 
         // Contests Related Api
