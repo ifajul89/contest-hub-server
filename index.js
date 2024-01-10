@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const port = process.env.PORT || 5000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -15,6 +16,21 @@ app.use(
     })
 );
 app.use(express.json());
+app.use(cookieParser());
+
+const verifyToken = (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).send({ message: "unauthorize access" });
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ message: "unauthorize access" });
+        }
+        req.user = decoded;
+        next();
+    });
+};
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6cq5lj6.mongodb.net/?retryWrites=true&w=majority`;
@@ -46,7 +62,7 @@ async function run() {
             const token = jwt.sign(user, process.env.ACCESS_TOKEN, {
                 expiresIn: "6h",
             });
-            res.cookie("access token", token, {
+            res.cookie("token", token, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
@@ -104,8 +120,11 @@ async function run() {
             res.send(result);
         });
 
-        app.get("/my-created-contests", async (req, res) => {
+        app.get("/my-created-contests", verifyToken, async (req, res) => {
             const creator = req.query.creator;
+            if (creator !== req.user.email) {
+                return res.status(403).send({ message: "forbidden access" });
+            }
             const query = { creatorEmail: creator };
             const result = await contestsCollection.find(query).toArray();
             res.send(result);
