@@ -71,7 +71,6 @@ async function run() {
 
         app.post("/logout", async (req, res) => {
             const user = req.body;
-            console.log("Logging Out User", user);
             res.clearCookie("access token", { maxAge: 0 }).send({
                 success: true,
             });
@@ -196,6 +195,11 @@ async function run() {
             res.send(result);
         });
 
+        // Leaderboard
+        app.get("/leaderboard", async (req, res) => {
+            res.send(await usersCollection.find().toArray());
+        });
+
         // Users Related API
         app.post("/users", async (req, res) => {
             const newUser = req.body;
@@ -276,8 +280,6 @@ async function run() {
             );
             res.send(result);
         });
-
-        const currentDate = new Date();
 
         app.get("/registered-contests/:email", async (req, res) => {
             const email = req.params.email;
