@@ -197,7 +197,12 @@ async function run() {
 
         // Leaderboard
         app.get("/leaderboard", async (req, res) => {
-            res.send(await usersCollection.find().toArray());
+            const result = await usersCollection
+                .find({ winCount: { $gt: 0 } })
+                .sort({ winCount: -1 })
+                .toArray();
+
+            res.send(result);
         });
 
         // Users Related API
