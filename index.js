@@ -11,7 +11,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // Middlewares
 app.use(
     cors({
-        origin: ["http://localhost:5173"],
+        origin: ["https://contest-hub-c13eb.web.app"],
         credentials: true,
     })
 );
